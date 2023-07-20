@@ -274,7 +274,7 @@ local default_plugins = {
   },
   {
 	"Pocco81/auto-save.nvim",
-	  config = function()
+	  init = function()
 		  require("auto-save").setup {
 			  -- your config goes here
 			  -- or just leave it empty :)

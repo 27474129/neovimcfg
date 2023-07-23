@@ -77,7 +77,6 @@ vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<cr>", { noremap = true})
 
 -- Buffer line shortcuts
 -- Movement
-vim.api.nvim_set_keymap("!", "<Tab>", ":BufferLineCycleNext<cr>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<Tab>", ":BufferLineCycleNext<cr>", { noremap = true })
 vim.api.nvim_set_keymap("n", "o", ":BufferLineCyclePrev<cr>", {noremap = true})
 

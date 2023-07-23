@@ -22,14 +22,15 @@ Plug 'nvim-tree/nvim-web-devicons'
 
 Plug 'marko-cerovac/material.nvim'
 
-" Maybe useless
 Plug 'numToStr/Comment.nvim'
 
-" Maybe useless
 Plug 'folke/which-key.nvim'
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim'
+
+Plug 'mfussenegger/nvim-dap'
 call plug#end()
 
 
@@ -703,5 +704,13 @@ require('gitsigns').setup {
   yadm = {
     enable = false
   },
+}
+EOF
+
+lua << EOF
+require("indent_blankline").setup {
+    -- for example, context is off by default, use this to turn it on
+    show_current_context = false,
+    show_current_context_start = false,
 }
 EOF

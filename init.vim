@@ -56,8 +56,10 @@ set tabstop=2
 set expandtab
 set shiftwidth=2
 
-noremap <Leader>y "+y
-noremap <Leader>p "+p
+" Copy in special clipboard
+lua << EOF
+vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true})
+EOF
 
 autocmd FileType python set colorcolumn=100
 

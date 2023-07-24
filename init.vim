@@ -31,6 +31,9 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 
 Plug 'mfussenegger/nvim-dap'
+
+" Auto close brackets
+Plug 'm4xshen/autoclose.nvim'
 call plug#end()
 
 
@@ -463,7 +466,7 @@ view = {
   centralize_selection = false,
   cursorline = true,
   debounce_delay = 15,
-  width = 30,
+  width = 40,
   hide_root_folder = false,
   side = "left",
   preserve_window_proportions = false,
@@ -719,4 +722,12 @@ require("indent_blankline").setup {
     show_current_context = false,
     show_current_context_start = false,
 }
+EOF
+
+lua << EOF
+require("autoclose").setup({
+   options = {
+      disabled_filetypes = { "text", "markdown" },
+   },
+})
 EOF

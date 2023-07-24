@@ -62,6 +62,12 @@ lua << EOF
 vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true})
 EOF
 
+" Close tab in tabbuffer
+lua << EOF
+vim.api.nvim_set_keymap("!", "<F5>", ":bd<cr>", { noremap = true })
+vim.api.nvim_set_keymap("n", "<F5>", ":bd<cr>", { noremap = true })
+EOF
+
 autocmd FileType python set colorcolumn=100
 
 " Plugin settings

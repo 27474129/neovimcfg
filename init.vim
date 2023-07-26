@@ -60,6 +60,11 @@ set tabstop=2
 set expandtab
 set shiftwidth=2
 
+lua << EOF
+vim.api.nvim_set_keymap("n", "r", "vim.lsp.buf.rename", {noremap = true})
+vim.api.nvim_set_keymap("v", "r", "vim.lsp.buf.rename", {noremap = true})
+EOF
+
 " Copy in special clipboard
 lua << EOF
 vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true})

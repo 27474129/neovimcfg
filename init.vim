@@ -46,7 +46,6 @@ colorscheme tokyonight
 "lua << EOF
 "vim.g.material_style = "deep ocean"
 "EOF
-
 inoremap jj <esc>
 set mouse=a  " enable mouse
 set encoding=utf-8
@@ -448,11 +447,9 @@ require'nvim-web-devicons'.setup {
     name = "Log"
   }
  };
- require'nvim-web-devicons'.get_icons();
- require("nvim-web-devicons").get_icon_by_filetype('py')
 }
+require'nvim-web-devicons'.get_icons()
 EOF
-
 
 
 lua << EOF

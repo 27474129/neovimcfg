@@ -32,10 +32,16 @@ Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'lukas-reineke/indent-blankline.nvim'
 
+" Debug plugins
 Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'theHamsta/nvim-dap-virtual-text'
+Plug 'rcarriga/nvim-notify'
+Plug 'folke/neodev.nvim'
 
 " Auto close brackets
 Plug 'm4xshen/autoclose.nvim'
+
 call plug#end()
 
 " Base settings
@@ -777,4 +783,181 @@ require("tokyonight").setup({
   ---@param colors ColorScheme
   on_highlights = function(highlights, colors) end,
 })
+EOF
+
+lua << EOF
+local dap = require('dap')
+dap.adapters.python = function(cb, config)
+  if config.request == 'attach' then
+    ---@diagnostic disable-next-line: undefined-field
+    local port = (config.connect or config).port
+    ---@diagnostic disable-next-line: undefined-field
+    local host = (config.connect or config).host or '127.0.0.1'
+    cb({
+      type = 'server',
+      port = assert(port, '`connect.port` is required for a python `attach` configuration'),
+      host = host,
+      options = {
+        source_filetype = 'python',
+      },
+    })
+  else
+    cb({
+      type = 'executable',
+      command = '/usr/local/bin/python3.7',
+      args = { '-m', 'debugpy.adapter' },
+      options = {
+        source_filetype = 'python',
+      },
+    })
+  end
+end
+
+-- -- Django debug
+-- table.insert(dap.configurations.python, {
+--   type = 'python',
+--   request = 'launch',
+--   name = 'Django',
+--   program = vim.fn.getcwd() .. '/manage.py',  -- NOTE: Adapt path to manage.py as needed
+--   args = {'runserver', '--noreload'},
+-- })
+
+local dap = require('dap')
+dap.configurations.python = {
+  {
+    -- The first three options are required by nvim-dap
+    type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
+    request = 'launch';
+    name = "Launch file";
+
+    -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+
+    program = "${file}"; -- This configuration will launch the current file if used.
+    pythonPath = function()
+      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+      local cwd = vim.fn.getcwd()
+      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+        return cwd .. '/venv/bin/python'
+      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+        return cwd .. '/.venv/bin/python'
+      else
+        return '/usr/bin/python'
+      end
+    end;
+  },
+}
+
+vim.keymap.set('n', '<C-b>', require 'dap'.toggle_breakpoint)
+EOF
+
+lua << EOF
+require("nvim-dap-virtual-text").setup()
+EOF
+
+lua << EOF
+require("neodev").setup({
+  library = { plugins = { "nvim-dap-ui" }, types = true },
+  ...
+})
+EOF
+
+lua << EOF
+require("dapui").setup()
+require("dapui").open()
+require("dapui").close()
+require("dapui").toggle()
+EOF
+
+lua << EOF
+local dap, dapui = require("dap"), require("dapui")
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+EOF
+
+lua << EOF
+local ui = require("dapui")
+
+ui.setup({
+  icons = { expanded = "▾", collapsed = "▸" },
+  mappings = {
+    open = "o",
+    remove = "d",
+    edit = "e",
+    repl = "r",
+    toggle = "t",
+  },
+  expand_lines = vim.fn.has("nvim-0.7"),
+  layouts = {
+    {
+      elements = {
+        "scopes",
+      },
+      size = 0.25,
+      position = "right"
+    },
+    {
+      elements = {
+        "breakpoints",
+      },
+      size = 0.3,
+      position = "bottom",
+    },
+  },
+  floating = {
+    max_height = nil,
+    max_width = nil,
+    border = "single",
+    mappings = {
+      close = { "q", "<Esc>" },
+    },
+  },
+  windows = { indent = 1 },
+  render = {
+    max_type_length = nil,
+  },
+})
+EOF
+
+lua << EOF
+local dap = require("dap")
+local ui = require("dapui")
+
+-- Start debugging session
+vim.keymap.set("n", "ds", function()
+  dap.continue()
+  ui.toggle({})
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-w>=", false, true, true), "n", false) -- Spaces buffers evenly
+end)
+
+-- Set breakpoints, get variable values, step into/out of functions, etc.
+vim.keymap.set("n", "dl", require("dap.ui.widgets").hover)
+vim.keymap.set("n", "dc", dap.continue)
+vim.keymap.set("n", "db", dap.toggle_breakpoint)
+vim.keymap.set("n", "dn", dap.step_over)
+vim.keymap.set("n", "di", dap.step_into)
+vim.keymap.set("n", "do", dap.step_out)
+vim.keymap.set("n", "dC", function()
+  dap.clear_breakpoints()
+  require("notify")("Breakpoints cleared", "warn")
+end)
+ 
+-- Close debugger and clear breakpoints
+vim.keymap.set("n", "de", function()
+  dap.clear_breakpoints()
+  ui.toggle({})
+  dap.terminate()
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-w>=", false, true, true), "n", false)
+  require("notify")("Debugger session ended", "warn")
+end)
+
+vim.fn.sign_define('DapBreakpoint', { text = '🐞' })
 EOF

@@ -1,7 +1,10 @@
 call plug#begin('~/.config/nvim/plugged')
+" Base
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.2' }
 Plug 'neovim/nvim-lspconfig'
+" Refactoring plug
+Plug 'glepnir/lspsaga.nvim'
 
 " for this plugin need to TSInstall python
 Plug 'nvim-treesitter/nvim-treesitter'
@@ -35,6 +38,7 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 " Debug plugins
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
+Plug 'puremourning/vimspector'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'rcarriga/nvim-notify'
 Plug 'folke/neodev.nvim'
@@ -42,6 +46,7 @@ Plug 'folke/neodev.nvim'
 " Auto close brackets
 Plug 'm4xshen/autoclose.nvim'
 
+" Tagbar
 call plug#end()
 
 " Base settings
@@ -120,6 +125,12 @@ vim.api.nvim_set_keymap("!", "<C-l>", ":BufferLineCLoseLeft<cr>", {noremap = tru
 vim.api.nvim_set_keymap("n", "<F1>", ":Gitsigns blame_line<cr>", {noremap = true})
 vim.api.nvim_set_keymap("!", "<F1>", ":Gitsigns blame_line<cr>", {noremap = true})
 
+-- Usages
+-- vim.api.nvim_set_keymap('n', '<leader>fr', ':lua vim.lsp.buf.references()<CR>', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', 'f', ':lua vim.lsp.buf.references()<CR>', {noremap = true, silent = true})
+
+-- Refactoring
+vim.api.nvim_set_keymap('n', 't', '<cmd>lua vim.lsp.buf.rename()<CR>', {noremap = true, silent = true})
 EOF
 
 lua << EOF
@@ -813,40 +824,26 @@ dap.adapters.python = function(cb, config)
   end
 end
 
--- -- Django debug
--- table.insert(dap.configurations.python, {
---   type = 'python',
---   request = 'launch',
---   name = 'Django',
---   program = vim.fn.getcwd() .. '/manage.py',  -- NOTE: Adapt path to manage.py as needed
---   args = {'runserver', '--noreload'},
--- })
 
 local dap = require('dap')
 dap.configurations.python = {
+  {
+    type = 'python',
+    request = 'launch',
+    name = 'Django',
+    program = vim.fn.getcwd() .. '/manage.py',  -- NOTE: Adapt path to manage.py as needed
+    command = '/usr/local/bin/python3.7',
+    args = {'runserver'},
+    django = true
+  },
   {
     -- The first three options are required by nvim-dap
     type = 'python'; -- the type here established the link to the adapter definition: `dap.adapters.python`
     request = 'launch';
     name = "Launch file";
-
     -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
-
     program = "${file}"; -- This configuration will launch the current file if used.
-    pythonPath = function()
-      -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-      -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
-      -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-      local cwd = vim.fn.getcwd()
-      if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-        return cwd .. '/venv/bin/python'
-      elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-        return cwd .. '/.venv/bin/python'
-      else
-        return '/usr/bin/python'
-      end
-    end;
-  },
+  } 
 }
 
 vim.keymap.set('n', '<C-b>', require 'dap'.toggle_breakpoint)
@@ -907,6 +904,7 @@ ui.setup({
     {
       elements = {
         "breakpoints",
+        "console",
       },
       size = 0.3,
       position = "bottom",

@@ -131,6 +131,9 @@ vim.api.nvim_set_keymap('n', 'f', ':lua vim.lsp.buf.references()<CR>', {noremap 
 
 -- Refactoring
 vim.api.nvim_set_keymap('n', 't', '<cmd>lua vim.lsp.buf.rename()<CR>', {noremap = true, silent = true})
+
+-- Object info
+vim.api.nvim_set_keymap('n', 'q', ':lua vim.lsp.buf.hover()<CR>', {noremap = true})
 EOF
 
 lua << EOF

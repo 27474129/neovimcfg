@@ -45,8 +45,6 @@ Plug 'folke/neodev.nvim'
 
 " Auto close brackets
 Plug 'm4xshen/autoclose.nvim'
-
-" Tagbar
 call plug#end()
 
 " Base settings
@@ -103,6 +101,8 @@ vim.api.nvim_set_keymap("!", "<F4>", ":Telescope find_files<cr>", { noremap = tr
 vim.api.nvim_set_keymap("!", "<F2>", ":Telescope live_grep<cr>", { noremap = true})
 vim.api.nvim_set_keymap("n", "<F4>", ":Telescope find_files<cr>", { noremap = true})
 vim.api.nvim_set_keymap("n", "<F2>", ":Telescope live_grep<cr>", { noremap = true})
+vim.api.nvim_set_keymap("n", "<F3>", ":Telescope buffers<cr>", { noremap = true})
+vim.api.nvim_set_keymap("!", "<F3>", ":Telescope buffers<cr>", { noremap = true})
 
 -- Tree shocuts
 vim.api.nvim_set_keymap("!", "<C-n>", ":NvimTreeToggle<cr>", { noremap = true})
@@ -962,3 +962,4 @@ end)
 
 vim.fn.sign_define('DapBreakpoint', { text = '🐞' })
 EOF
+

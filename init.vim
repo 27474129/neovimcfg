@@ -26,6 +26,7 @@ Plug 'nvim-tree/nvim-web-devicons'
 " color schemes
 Plug 'marko-cerovac/material.nvim'
 Plug 'folke/tokyonight.nvim'
+Plug 'ellisonleao/gruvbox.nvim'
 
 Plug 'numToStr/Comment.nvim'
 
@@ -50,7 +51,9 @@ call plug#end()
 " Base settings
 
 " color scheme
-colorscheme tokyonight
+" colorscheme tokyonight
+set background=dark
+colorscheme gruvbox
 
 "lua << EOF
 "vim.g.material_style = "deep ocean"

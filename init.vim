@@ -85,9 +85,42 @@ vim.api.nvim_set_keymap("n", "r", "vim.lsp.buf.rename", {noremap = true})
 vim.api.nvim_set_keymap("v", "r", "vim.lsp.buf.rename", {noremap = true})
 EOF
 
-" Copy in special clipboard
+" Copy and paste in special clipboard
 lua << EOF
+-- Copy
 vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true})
+
+-- Paste
+function paste_from_clipboard()
+   -- Get the system clipboard content using the OS-specific command
+   local command = ""
+   local platform = vim.fn.systemlist('uname')[1]
+
+   if platform == "Darwin" then
+       command = "pbpaste"
+   elseif platform == "Linux" then
+       command = "xclip -o -selection clipboard"
+   elseif platform == "Windows" then
+       command = "powershell.exe -command Get-Clipboard"
+   end
+
+   -- Read the output of the command and insert it into the buffer
+   local content = vim.fn.system(command)
+   content = content:gsub("\n$", "") -- Remove trailing newlines
+   
+   -- Determine the current mode and insert the content accordingly
+   local mode = vim.api.nvim_get_mode().mode
+   if mode == "i" or mode == "ic" then
+       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-R>+<Esc>", true, true, true), "n", true)
+   else
+       vim.api.nvim_put({content}, "c", true, true)
+   end
+end
+
+-- Bind Ctrl+V to the paste_from_clipboard function in normal, visual, and insert mode
+vim.api.nvim_set_keymap("n", "<C-v>", ":lua paste_from_clipboard()<CR>", {noremap = true})
+vim.api.nvim_set_keymap("v", "<C-v>", ":lua paste_from_clipboard()<CR>", {noremap = true})
+vim.api.nvim_set_keymap("i", "<C-v>", "<Esc>:lua paste_from_clipboard()<CR>a", {noremap = true})
 EOF
 
 " Close tab in tabbuffer

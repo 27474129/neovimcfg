@@ -46,6 +46,7 @@ Plug 'folke/neodev.nvim'
 
 " Auto close brackets
 Plug 'm4xshen/autoclose.nvim'
+
 call plug#end()
 
 " Base settings
@@ -91,12 +92,11 @@ EOF
 
 " Close tab in tabbuffer
 lua << EOF
-vim.api.nvim_set_keymap("!", "<F5>", ":bd<cr>", { noremap = true })
-vim.api.nvim_set_keymap("n", "<F5>", ":bd<cr>", { noremap = true })
+vim.api.nvim_set_keymap('n', '<F5>', ':bdelete<CR>:bnext<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('!', '<F5>', ':bdelete<CR>:bnext<CR>', { noremap = true, silent = true })
 EOF
 
 autocmd FileType python set colorcolumn=100
-
 " Plugin settings
 lua << EOF
 -- Telescope shorcuts

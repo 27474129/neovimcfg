@@ -81,6 +81,11 @@ set expandtab
 set shiftwidth=2
 
 lua << EOF
+vim.api.nvim_set_keymap('n', 'z', ':q!<CR>', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('!', 'z', ':q!<CR>', {noremap = true, silent = true})
+EOF
+
+lua << EOF
 vim.api.nvim_set_keymap("n", "r", "vim.lsp.buf.rename", {noremap = true})
 vim.api.nvim_set_keymap("v", "r", "vim.lsp.buf.rename", {noremap = true})
 EOF

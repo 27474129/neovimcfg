@@ -39,7 +39,6 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 " Debug plugins
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
-Plug 'puremourning/vimspector'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'rcarriga/nvim-notify'
 Plug 'folke/neodev.nvim'
@@ -530,25 +529,17 @@ sync_root_with_cwd = false,
 reload_on_bufenter = false,
 respect_buf_cwd = false,
 on_attach = "default",
-remove_keymaps = false,
 select_prompts = false,
 view = {
   centralize_selection = false,
   cursorline = true,
   debounce_delay = 15,
   width = 40,
-  hide_root_folder = false,
   side = "left",
   preserve_window_proportions = false,
   number = false,
   relativenumber = false,
   signcolumn = "yes",
-  mappings = {
-    custom_only = false,
-    list = {
-      -- user mappings go here
-    },
-  },
   float = {
     enable = false,
     quit_on_focus_loss = true,
@@ -787,10 +778,7 @@ require('gitsigns').setup {
 EOF
 
 lua << EOF
-require("indent_blankline").setup {
-    -- for example, context is off by default, use this to turn it on
-    show_current_context = false,
-    show_current_context_start = false,
+require("ibl").setup {
 }
 EOF
 

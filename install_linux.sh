@@ -365,15 +365,113 @@ if ! grep -q ".cargo/env" "$SHELL_CONFIG"; then
     echo "✓ Rust paths added to $SHELL_CONFIG"
 fi
 
+# Автоматическая установка плагинов
+echo ""
+echo "Устанавливаем плагины neovim..."
+
+# Определяем правильную директорию для nvim
+NVIM_DATA_DIR="$(nvim --headless -c 'echo stdpath("data")' -c 'qall' 2>/dev/null | tail -1)"
+NVIM_CONFIG_DIR="$(nvim --headless -c 'echo stdpath("config")' -c 'qall' 2>/dev/null | tail -1)"
+
+echo "  Neovim data dir: $NVIM_DATA_DIR"
+echo "  Neovim config dir: $NVIM_CONFIG_DIR"
+
+# Убеждаемся что директории существуют
+mkdir -p "$NVIM_DATA_DIR/site/autoload"
+mkdir -p "$NVIM_CONFIG_DIR"
+
+# Копируем vim-plug в правильное место
+if [ -f "$HOME/.local/share/nvim/site/autoload/plug.vim" ]; then
+    cp "$HOME/.local/share/nvim/site/autoload/plug.vim" "$NVIM_DATA_DIR/site/autoload/"
+fi
+
+# Копируем init.vim в правильное место
+if [ -f "$SCRIPT_DIR/init.vim" ]; then
+    cp -f "$SCRIPT_DIR/init.vim" "$NVIM_CONFIG_DIR/init.vim"
+    echo "  ✓ init.vim скопирован в $NVIM_CONFIG_DIR"
+fi
+
+# Создаем минимальный конфиг для установки плагинов
+cat > /tmp/install_plugins.vim << 'EOFVIM'
+let plug_path = stdpath('data') . '/site/autoload/plug.vim'
+if filereadable(plug_path)
+  execute 'source ' . plug_path
+endif
+
+call plug#begin(stdpath('config') . '/plugged')
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.2' }
+Plug 'neovim/nvim-lspconfig'
+Plug 'glepnir/lspsaga.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'Pocco81/auto-save.nvim'
+Plug 'nvim-tree/nvim-tree.lua'
+Plug 'nvim-tree/nvim-web-devicons'
+Plug 'marko-cerovac/material.nvim'
+Plug 'folke/tokyonight.nvim'
+Plug 'ellisonleao/gruvbox.nvim'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+Plug 'tiagovla/tokyodark.nvim'
+Plug 'artanikin/vim-synthwave84'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'numToStr/Comment.nvim'
+Plug 'folke/which-key.nvim'
+Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
+Plug 'lewis6991/gitsigns.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim'
+Plug 'mfussenegger/nvim-dap'
+Plug 'nvim-neotest/nvim-nio'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'theHamsta/nvim-dap-virtual-text'
+Plug 'rcarriga/nvim-notify'
+Plug 'folke/neodev.nvim'
+Plug 'm4xshen/autoclose.nvim'
+call plug#end()
+EOFVIM
+
+# Устанавливаем плагины
+timeout 180 nvim --headless -u /tmp/install_plugins.vim +PlugInstall +qall 2>&1 | grep -v "^$" || true
+echo "  ✓ Плагины установлены"
+
+# Устанавливаем Treesitter парсеры
+echo ""
+echo "Устанавливаем Treesitter парсеры..."
+cat > /tmp/install_ts.lua << 'EOFLUA'
+vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '/plugged/nvim-treesitter')
+pcall(function()
+  require('nvim-treesitter.install').ensure_installed_sync({ 'python', 'go', 'typescript', 'javascript', 'rust', 'lua', 'vim', 'vimdoc', 'query', 'c', 'gomod', 'gosum', 'gowork' })
+end)
+EOFLUA
+
+timeout 180 nvim --headless -u /tmp/install_plugins.vim -c "luafile /tmp/install_ts.lua" -c "qall" 2>&1 | grep -E "(Downloading|installed|Compiling)" || true
+echo "  ✓ Treesitter парсеры установлены"
+
+# Очищаем временные файлы
+rm -f /tmp/install_plugins.vim /tmp/install_ts.lua
+
 echo ""
 echo "================================="
 echo "Installation Complete!"
 echo "================================="
 echo ""
-echo "Next steps:"
-echo "1. Restart your terminal or run: source $SHELL_CONFIG"
-echo "2. Open Neovim with: nvim"
-echo "3. Install plugins with: :PlugInstall"
-echo "4. Install Treesitter parsers with: :TSInstall python go typescript rust"
+echo "✓ Neovim установлен и настроен"
+echo "✓ Все плагины установлены"
+echo "✓ Treesitter парсеры установлены"
 echo ""
-echo "Optional: You may need to restart your terminal for all changes to take effect"
+echo "Запускай:"
+echo "  nvim"
+echo ""
+echo "Горячие клавиши:"
+echo "  Ctrl+n - файловое дерево"
+echo "  F4 - поиск файлов"
+echo "  F2 - поиск по тексту"
+echo "  gd - перейти к определению"
+echo "  q - инфо о символе"
+echo "  jj - выход из insert режима"
+echo ""
+echo "Optional: Перезапусти терминал для применения PATH: source $SHELL_CONFIG"

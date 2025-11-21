@@ -1,4 +1,10 @@
-call plug#begin('~/.config/nvim/plugged')
+" Загрузка vim-plug явно
+let plug_path = stdpath('data') . '/site/autoload/plug.vim'
+if filereadable(plug_path)
+  execute 'source ' . plug_path
+endif
+
+call plug#begin(stdpath('config') . '/plugged')
 " Base
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.2' }
@@ -86,103 +92,93 @@ EOF
 set background=dark
 colorscheme tokyonight
 
-" NEON CYBERPUNK THEME - Enhanced Consistency
+" Blade Runner Neon Theme - Electric Blue + Red
 lua << EOF
 vim.cmd([[
-  " Main editor colors - Deep black with cyan/magenta neon
-  highlight Normal guibg=#000000 guifg=#00ffff
-  highlight NormalFloat guibg=#0a0520 guifg=#00ffff
-  highlight LineNr guifg=#ff0080 guibg=#000000
+  " Main editor colors - PURE BLACK with neon blue
+  highlight Normal guibg=#000000 guifg=#00d4ff
+  highlight NormalFloat guibg=#0a0e14
+  highlight LineNr guifg=#ff0066 guibg=#000000
   highlight CursorLineNr guifg=#00ffff gui=bold
-  highlight CursorLine guibg=#0d1117 gui=none
+  highlight CursorLine guibg=#0a1520 gui=bold
   highlight ColorColumn guibg=#0a0520
 
-  " NEON GLOW CURSOR
+  " SUPER BRIGHT CURSOR - Electric Blue + Red
   highlight Cursor guibg=#00ffff guifg=#000000 gui=bold,reverse
-  highlight iCursor guibg=#ff0080 guifg=#000000 gui=bold,reverse
-  highlight vCursor guibg=#ff0080 guifg=#000000 gui=bold,reverse
-  highlight lCursor guibg=#00ffff guifg=#000000 gui=bold,reverse
-  highlight CursorColumn guibg=#0d1117
+  highlight iCursor guibg=#ff0066 guifg=#000000 gui=bold,reverse
+  highlight vCursor guibg=#ff3399 guifg=#000000 gui=bold,reverse
+  highlight lCursor guibg=#00d4ff guifg=#000000 gui=bold,reverse
+  highlight CursorColumn guibg=#0a1520
 
-  " Syntax - Cyan + Magenta + Purple neon palette
-  highlight Comment guifg=#8b5cf6 gui=italic
-  highlight Constant guifg=#ff0080 gui=bold
-  highlight String guifg=#00ffff gui=bold
-  highlight Character guifg=#ff0080
-  highlight Number guifg=#ff00ff gui=bold
-  highlight Boolean guifg=#ff0080 gui=bold
-  highlight Float guifg=#ff00ff gui=bold
+  " Blade Runner Neon Syntax - Electric Blue + Red + Orange
+  highlight Comment guifg=#4d79ff gui=italic
+  highlight Constant guifg=#ff0066 gui=bold
+  highlight String guifg=#00d4ff gui=bold
+  highlight Character guifg=#ff3399
+  highlight Number guifg=#ff6600 gui=bold
+  highlight Boolean guifg=#ff0066 gui=bold
+  highlight Float guifg=#ff6600 gui=bold
   highlight Function guifg=#00ffff gui=bold
-  highlight Statement guifg=#ff0080 gui=bold
-  highlight Conditional guifg=#ff0080 gui=italic,bold
-  highlight Repeat guifg=#ff0080 gui=bold
-  highlight Label guifg=#00ffff gui=bold
-  highlight Operator guifg=#ff00ff gui=bold
-  highlight Keyword guifg=#ff0080 gui=bold,italic
+  highlight Statement guifg=#ff0066 gui=bold
+  highlight Conditional guifg=#ff0066 gui=italic,bold
+  highlight Repeat guifg=#ff0066 gui=bold
+  highlight Label guifg=#00d4ff gui=bold
+  highlight Operator guifg=#ff3399 gui=bold
+  highlight Keyword guifg=#ff0066 gui=bold,italic
   highlight Type guifg=#00ffff gui=bold
-  highlight Special guifg=#ff00ff gui=bold
-  highlight Identifier guifg=#00ffff
-  highlight PreProc guifg=#ff00ff gui=bold
-  highlight Include guifg=#ff0080 gui=bold
+  highlight Special guifg=#ff6600 gui=bold
+  highlight Identifier guifg=#00d4ff
+  highlight PreProc guifg=#ff6600 gui=bold
+  highlight Include guifg=#ff0066 gui=bold
   highlight Define guifg=#00ffff gui=bold
-  highlight Macro guifg=#ff00ff gui=bold
+  highlight Macro guifg=#ff6600 gui=bold
 
-  " UI Elements - Consistent neon theme
-  highlight VertSplit guifg=#00ffff guibg=#000000 gui=bold
-  highlight StatusLine guifg=#00ffff guibg=#0a0520 gui=bold
-  highlight StatusLineNC guifg=#8b5cf6 guibg=#000000
-  highlight TabLine guifg=#8b5cf6 guibg=#000000
+  " UI Elements - Electric Blue + Red theme
+  highlight VertSplit guifg=#00d4ff guibg=#000000 gui=bold
+  highlight StatusLine guifg=#00ffff guibg=#0a1520 gui=bold
+  highlight StatusLineNC guifg=#4d79ff guibg=#000000
+  highlight TabLine guifg=#4d79ff guibg=#000000
   highlight TabLineFill guibg=#000000
-  highlight TabLineSel guifg=#00ffff guibg=#0a0520 gui=bold
-  highlight Pmenu guibg=#0a0520 guifg=#00ffff
-  highlight PmenuSel guibg=#ff0080 guifg=#000000 gui=bold
-  highlight PmenuSbar guibg=#0a0520
-  highlight PmenuThumb guibg=#ff0080
-  highlight WinSeparator guifg=#00ffff guibg=#000000 gui=bold
+  highlight TabLineSel guifg=#00ffff guibg=#0a1520 gui=bold
+  highlight Pmenu guibg=#0a1520 guifg=#00d4ff
+  highlight PmenuSel guibg=#ff0066 guifg=#000000 gui=bold
+  highlight PmenuSbar guibg=#0a1520
+  highlight PmenuThumb guibg=#ff0066
 
-  " Search highlighting - Magenta + Cyan glow
-  highlight Search guibg=#ff0080 guifg=#000000 gui=bold
+  " Search highlighting - Red + Blue
+  highlight Search guibg=#ff0066 guifg=#000000 gui=bold
   highlight IncSearch guibg=#00ffff guifg=#000000 gui=bold
-  highlight Visual guibg=#ff0080 guifg=#000000 gui=bold
 
-  " NvimTree - Consistent neon theme
-  highlight NvimTreeNormal guibg=#000000 guifg=#00ffff
+  " NvimTree - Blade Runner Blue + Red theme
+  highlight NvimTreeNormal guibg=#000000 guifg=#00d4ff
   highlight NvimTreeEndOfBuffer guibg=#000000
-  highlight NvimTreeCursorLine guibg=#0d1117 gui=none
+  highlight NvimTreeCursorLine guibg=#0a1520 gui=bold
   highlight NvimTreeFolderName guifg=#00ffff gui=bold
-  highlight NvimTreeOpenedFolderName guifg=#ff0080 gui=bold
-  highlight NvimTreeEmptyFolderName guifg=#8b5cf6
+  highlight NvimTreeOpenedFolderName guifg=#ff0066 gui=bold
+  highlight NvimTreeEmptyFolderName guifg=#4d79ff
   highlight NvimTreeFolderIcon guifg=#00ffff gui=bold
-  highlight NvimTreeRootFolder guifg=#ff0080 gui=bold
-  highlight NvimTreeGitDirty guifg=#ff00ff gui=bold
+  highlight NvimTreeRootFolder guifg=#ff0066 gui=bold
+  highlight NvimTreeGitDirty guifg=#ff6600 gui=bold
   highlight NvimTreeGitNew guifg=#00ffff gui=bold
-  highlight NvimTreeGitDeleted guifg=#ff0080 gui=bold
-  highlight NvimTreeGitStaged guifg=#00ffff gui=bold
-  highlight NvimTreeSpecialFile guifg=#ff00ff gui=bold,underline
-  highlight NvimTreeIndentMarker guifg=#8b5cf6
+  highlight NvimTreeGitDeleted guifg=#ff0066 gui=bold
+  highlight NvimTreeGitStaged guifg=#00d4ff gui=bold
+  highlight NvimTreeSpecialFile guifg=#ff6600 gui=bold,underline
+  highlight NvimTreeIndentMarker guifg=#00d4ff
   highlight NvimTreeExecFile guifg=#00ffff gui=bold
-  highlight NvimTreeImageFile guifg=#ff0080
-  highlight NvimTreeSymlink guifg=#ff00ff gui=italic
+  highlight NvimTreeImageFile guifg=#ff3399
+  highlight NvimTreeSymlink guifg=#00d4ff gui=italic
 
-  " Diagnostics - Neon error colors
-  highlight DiagnosticError guifg=#ff0080 gui=bold
-  highlight DiagnosticWarn guifg=#ff00ff gui=bold
-  highlight DiagnosticInfo guifg=#00ffff gui=bold
-  highlight DiagnosticHint guifg=#8b5cf6
+  " Diagnostics - Red + Blue + Orange
+  highlight DiagnosticError guifg=#ff0066 gui=bold
+  highlight DiagnosticWarn guifg=#ff6600 gui=bold
+  highlight DiagnosticInfo guifg=#00d4ff gui=bold
+  highlight DiagnosticHint guifg=#00ffff
 
-  " Git signs - Bright neon colors
+  " Git signs - Green for new/add, Yellow for changes, Red for delete
   highlight GitSignsAdd guifg=#00ff00 gui=bold
-  highlight GitSignsChange guifg=#ff00ff gui=bold
-  highlight GitSignsDelete guifg=#ff0080 gui=bold
-  highlight GitSignsUntracked guifg=#00ffff gui=bold
-
-  " Telescope - Neon theme for fuzzy finder
-  highlight TelescopeBorder guifg=#00ffff gui=bold
-  highlight TelescopePromptBorder guifg=#ff0080 gui=bold
-  highlight TelescopeResultsBorder guifg=#00ffff gui=bold
-  highlight TelescopePreviewBorder guifg=#00ffff gui=bold
-  highlight TelescopeSelection guibg=#0d1117 guifg=#00ffff gui=bold
-  highlight TelescopeMatching guifg=#ff0080 gui=bold
+  highlight GitSignsChange guifg=#ffff00 gui=bold
+  highlight GitSignsDelete guifg=#ff0066 gui=bold
+  highlight GitSignsUntracked guifg=#00ff00 gui=bold
 ]])
 EOF
 inoremap jj <esc>
@@ -396,7 +392,7 @@ vim.api.nvim_set_keymap('n', 'q', ':lua vim.lsp.buf.hover()<CR>', {noremap = tru
 EOF
 
 lua << EOF
-require('Comment').setup()
+pcall(function() require('Comment').setup() end)
 EOF
 
 "lua << EOF
@@ -667,10 +663,12 @@ lua <<EOF
 EOF
 
 lua << EOF
+pcall(function()
 	require("auto-save").setup {
 		-- your config goes here
 		-- or just leave it empty :)
 	}
+end)
 EOF
 
 
@@ -1167,6 +1165,7 @@ require('gitsigns').setup {
 EOF
 
 lua << EOF
+pcall(function()
 require("ibl").setup {
   indent = {
     char = "│",
@@ -1190,14 +1189,17 @@ require("ibl").setup {
     }
   }
 }
+end)
 EOF
 
 lua << EOF
+pcall(function()
 require("autoclose").setup({
    options = {
       disabled_filetypes = { "text", "markdown" },
    },
 })
+end)
 EOF
 
 lua << EOF
@@ -1332,6 +1334,7 @@ lualine.setup {
 EOF
 
 lua << EOF
+pcall(function()
 require("tokyonight").setup({
   -- your configuration comes here
   -- or leave it empty to use the default settings
@@ -1367,10 +1370,13 @@ require("tokyonight").setup({
   ---@param colors ColorScheme
   on_highlights = function(highlights, colors) end,
 })
+end)
 EOF
 
 lua << EOF
-local dap = require('dap')
+local dap_ok, dap = pcall(require, 'dap')
+if not dap_ok then return end
+
 dap.adapters.python = function(cb, config)
   if config.request == 'attach' then
     ---@diagnostic disable-next-line: undefined-field
@@ -1456,6 +1462,7 @@ dap.configurations.go = {
 EOF
 
 lua << EOF
+pcall(function()
 require("nvim-dap-virtual-text").setup({
   enabled = false,  -- Disable virtual text by default
   enabled_commands = true,
@@ -1467,21 +1474,25 @@ require("nvim-dap-virtual-text").setup({
   all_references = false,
   virt_text_pos = 'eol',
 })
+end)
 EOF
 
 lua << EOF
+pcall(function()
 require("neodev").setup({
   library = { plugins = { "nvim-dap-ui" }, types = true },
-  ...
 })
+end)
 EOF
 
 lua << EOF
-require("dapui").setup()
+pcall(function() require("dapui").setup() end)
 EOF
 
 lua << EOF
-local dap, dapui = require("dap"), require("dapui")
+local dap_ok, dap = pcall(require, "dap")
+local dapui_ok, dapui = pcall(require, "dapui")
+if not dap_ok or not dapui_ok then return end
 dap.listeners.after.event_initialized["dapui_config"] = function()
   dapui.open()
 end
@@ -1494,7 +1505,8 @@ end
 EOF
 
 lua << EOF
-local ui = require("dapui")
+local ui_ok, ui = pcall(require, "dapui")
+if not ui_ok then return end
 
 ui.setup({
   icons = { expanded = "▾", collapsed = "▸" },
@@ -1539,8 +1551,9 @@ ui.setup({
 EOF
 
 lua << EOF
-local dap = require("dap")
-local ui = require("dapui")
+local dap_ok, dap = pcall(require, "dap")
+local ui_ok, ui = pcall(require, "dapui")
+if not dap_ok or not ui_ok then return end
 
 -- Start debugging session
 vim.keymap.set("n", "ds", function()

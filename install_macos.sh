@@ -210,26 +210,43 @@ fi
 echo ""
 echo "Устанавливаем плагины neovim..."
 
-# Определяем правильную директорию для nvim
-NVIM_DATA_DIR="$(nvim --headless -c 'echo stdpath("data")' -c 'qall' 2>/dev/null | tail -1)"
-NVIM_CONFIG_DIR="$(nvim --headless -c 'echo stdpath("config")' -c 'qall' 2>/dev/null | tail -1)"
+# Сначала создаем базовые директории для nvim в стандартном месте
+mkdir -p "$HOME/.config/nvim"
+mkdir -p "$HOME/.local/share/nvim/site/autoload"
 
-echo "  Neovim data dir: $NVIM_DATA_DIR"
-echo "  Neovim config dir: $NVIM_CONFIG_DIR"
-
-# Убеждаемся что директории существуют
-mkdir -p "$NVIM_DATA_DIR/site/autoload"
-mkdir -p "$NVIM_CONFIG_DIR"
-
-# Копируем vim-plug в правильное место (он уже установлен выше)
-# Копируем init.vim в правильное место
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Копируем init.vim
 if [ -f "$SCRIPT_DIR/init.vim" ]; then
-    cp -f "$SCRIPT_DIR/init.vim" "$NVIM_CONFIG_DIR/init.vim"
-    echo "  ✓ init.vim скопирован в $NVIM_CONFIG_DIR"
+    cp -f "$SCRIPT_DIR/init.vim" "$HOME/.config/nvim/init.vim"
+    echo "  ✓ init.vim скопирован в $HOME/.config/nvim"
+else
+    echo "  ⚠ Предупреждение: init.vim не найден в $SCRIPT_DIR"
 fi
 
-# Создаем минимальный конфиг для установки плагинов
+# vim-plug уже установлен выше в $HOME/.local/share/nvim/site/autoload/plug.vim
+
+# Устанавливаем плагины используя основной конфиг
+echo "  Устанавливаю плагины (это займет ~1-2 минуты)..."
+timeout 180 nvim --headless +PlugInstall +qall 2>&1 | grep -E "(Updated|Installed|installed)" || true
+echo "  ✓ Плагины установлены"
+
+# Устанавливаем Treesitter парсеры
+echo ""
+echo "Устанавливаем Treesitter парсеры..."
+cat > /tmp/install_ts.lua << 'EOFLUA'
+pcall(function()
+  require('nvim-treesitter.install').ensure_installed_sync({ 'python', 'go', 'typescript', 'javascript', 'rust', 'lua', 'vim', 'vimdoc', 'query', 'c', 'gomod', 'gosum', 'gowork' })
+end)
+EOFLUA
+
+echo "  Устанавливаю парсеры (это займет ~1-2 минуты)..."
+timeout 180 nvim --headless -c "luafile /tmp/install_ts.lua" -c "qall" 2>&1 | grep -E "(Downloading|installed|Compiling)" || true
+echo "  ✓ Treesitter парсеры установлены"
+
+# Очищаем временные файлы
+rm -f /tmp/install_ts.lua
+
+# Следующий блок больше не нужен - удаляем старый код
+: << 'OLDCODE'
 cat > /tmp/install_plugins.vim << 'EOFVIM'
 let plug_path = stdpath('data') . '/site/autoload/plug.vim'
 if filereadable(plug_path)
@@ -271,26 +288,7 @@ Plug 'folke/neodev.nvim'
 Plug 'm4xshen/autoclose.nvim'
 call plug#end()
 EOFVIM
-
-# Устанавливаем плагины
-timeout 180 nvim --headless -u /tmp/install_plugins.vim +PlugInstall +qall 2>&1 | grep -v "^$" || true
-echo "  ✓ Плагины установлены"
-
-# Устанавливаем Treesitter парсеры
-echo ""
-echo "Устанавливаем Treesitter парсеры..."
-cat > /tmp/install_ts.lua << 'EOFLUA'
-vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '/plugged/nvim-treesitter')
-pcall(function()
-  require('nvim-treesitter.install').ensure_installed_sync({ 'python', 'go', 'typescript', 'javascript', 'rust', 'lua', 'vim', 'vimdoc', 'query', 'c', 'gomod', 'gosum', 'gowork' })
-end)
-EOFLUA
-
-timeout 180 nvim --headless -u /tmp/install_plugins.vim -c "luafile /tmp/install_ts.lua" -c "qall" 2>&1 | grep -E "(Downloading|installed|Compiling)" || true
-echo "  ✓ Treesitter парсеры установлены"
-
-# Очищаем временные файлы
-rm -f /tmp/install_plugins.vim /tmp/install_ts.lua
+OLDCODE
 
 echo ""
 echo "================================"

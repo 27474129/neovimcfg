@@ -3,6 +3,9 @@
 # Neovim Configuration Installation Script for Linux
 # This script installs all dependencies needed for the Neovim configuration
 
+# Определяем директорию скрипта в самом начале
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 set -e
 
 echo "================================="
@@ -260,7 +263,7 @@ export PATH=$PATH:$HOME/go/bin
 echo ""
 echo "Installing gopls (Go LSP server)..."
 if ! command -v gopls &> /dev/null; then
-    go install golang.org/x/tools/gopls@latest
+    go install golang.org/x/tools/gopls@latest 2>&1 || echo "⚠ gopls installation failed (требуется Go 1.22+)"
 else
     echo "✓ gopls already installed"
 fi
@@ -271,28 +274,28 @@ echo "Installing additional Go development tools..."
 
 # Static check
 if ! command -v staticcheck &> /dev/null; then
-    go install honnef.co/go/tools/cmd/staticcheck@latest
+    go install honnef.co/go/tools/cmd/staticcheck@latest 2>&1 || echo "⚠ staticcheck installation failed"
 else
     echo "✓ staticcheck already installed"
 fi
 
 # golangci-lint
 if ! command -v golangci-lint &> /dev/null; then
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin 2>&1 || echo "⚠ golangci-lint installation failed"
 else
     echo "✓ golangci-lint already installed"
 fi
 
 # delve (Go debugger)
 if ! command -v dlv &> /dev/null; then
-    go install github.com/go-delve/delve/cmd/dlv@latest
+    go install github.com/go-delve/delve/cmd/dlv@latest 2>&1 || echo "⚠ delve installation failed"
 else
     echo "✓ delve already installed"
 fi
 
 # goimports
 if ! command -v goimports &> /dev/null; then
-    go install golang.org/x/tools/cmd/goimports@latest
+    go install golang.org/x/tools/cmd/goimports@latest 2>&1 || echo "⚠ goimports installation failed"
 else
     echo "✓ goimports already installed"
 fi
@@ -321,14 +324,7 @@ if [ ! -d "$NVIM_CONFIG_DIR" ]; then
     mkdir -p "$NVIM_CONFIG_DIR"
 fi
 
-# Copy init.vim to config directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "$SCRIPT_DIR/init.vim" ]; then
-    cp "$SCRIPT_DIR/init.vim" "$NVIM_CONFIG_DIR/init.vim"
-    echo "✓ init.vim copied to $NVIM_CONFIG_DIR"
-else
-    echo "⚠ Warning: init.vim not found in script directory"
-fi
+# init.vim copying is now handled in the automatic plugin installation section below
 
 # Install vim-plug
 echo ""
@@ -369,90 +365,56 @@ fi
 echo ""
 echo "Устанавливаем плагины neovim..."
 
-# Определяем правильную директорию для nvim
-NVIM_DATA_DIR="$(nvim --headless -c 'echo stdpath("data")' -c 'qall' 2>/dev/null | tail -1)"
-NVIM_CONFIG_DIR="$(nvim --headless -c 'echo stdpath("config")' -c 'qall' 2>/dev/null | tail -1)"
+# Сначала создаем базовые директории для nvim в стандартном месте
+mkdir -p "$HOME/.config/nvim"
+mkdir -p "$HOME/.local/share/nvim/site/autoload"
 
-echo "  Neovim data dir: $NVIM_DATA_DIR"
-echo "  Neovim config dir: $NVIM_CONFIG_DIR"
-
-# Убеждаемся что директории существуют
-mkdir -p "$NVIM_DATA_DIR/site/autoload"
-mkdir -p "$NVIM_CONFIG_DIR"
-
-# Копируем vim-plug в правильное место
-if [ -f "$HOME/.local/share/nvim/site/autoload/plug.vim" ]; then
-    cp "$HOME/.local/share/nvim/site/autoload/plug.vim" "$NVIM_DATA_DIR/site/autoload/"
-fi
-
-# Копируем init.vim в правильное место
+# Копируем init.vim
 if [ -f "$SCRIPT_DIR/init.vim" ]; then
-    cp -f "$SCRIPT_DIR/init.vim" "$NVIM_CONFIG_DIR/init.vim"
-    echo "  ✓ init.vim скопирован в $NVIM_CONFIG_DIR"
+    cp -f "$SCRIPT_DIR/init.vim" "$HOME/.config/nvim/init.vim"
+    echo "  ✓ init.vim скопирован в $HOME/.config/nvim"
+else
+    echo "  ⚠ Предупреждение: init.vim не найден в $SCRIPT_DIR"
 fi
 
-# Создаем минимальный конфиг для установки плагинов
-cat > /tmp/install_plugins.vim << 'EOFVIM'
-let plug_path = stdpath('data') . '/site/autoload/plug.vim'
-if filereadable(plug_path)
-  execute 'source ' . plug_path
-endif
+# vim-plug уже установлен выше, просто проверяем
+if [ ! -f "$HOME/.local/share/nvim/site/autoload/plug.vim" ]; then
+    echo "  ⚠ vim-plug не найден, скачиваю..."
+    curl -fLo "$HOME/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
 
-call plug#begin(stdpath('config') . '/plugged')
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.2' }
-Plug 'neovim/nvim-lspconfig'
-Plug 'glepnir/lspsaga.nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'Pocco81/auto-save.nvim'
-Plug 'nvim-tree/nvim-tree.lua'
-Plug 'nvim-tree/nvim-web-devicons'
-Plug 'marko-cerovac/material.nvim'
-Plug 'folke/tokyonight.nvim'
-Plug 'ellisonleao/gruvbox.nvim'
-Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
-Plug 'tiagovla/tokyodark.nvim'
-Plug 'artanikin/vim-synthwave84'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'numToStr/Comment.nvim'
-Plug 'folke/which-key.nvim'
-Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
-Plug 'lewis6991/gitsigns.nvim'
-Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'mfussenegger/nvim-dap'
-Plug 'nvim-neotest/nvim-nio'
-Plug 'rcarriga/nvim-dap-ui'
-Plug 'theHamsta/nvim-dap-virtual-text'
-Plug 'rcarriga/nvim-notify'
-Plug 'folke/neodev.nvim'
-Plug 'm4xshen/autoclose.nvim'
-call plug#end()
-EOFVIM
+# Также копируем в /home/$USER на случай если nvim использует этот путь
+ALT_HOME="/home/$(whoami)"
+if [ -d "$ALT_HOME" ] && [ "$ALT_HOME" != "$HOME" ]; then
+    echo "  Также копирую в $ALT_HOME (на случай нестандартного HOME)"
+    mkdir -p "$ALT_HOME/.config/nvim"
+    mkdir -p "$ALT_HOME/.local/share/nvim/site/autoload"
+    cp -f "$SCRIPT_DIR/init.vim" "$ALT_HOME/.config/nvim/init.vim" 2>/dev/null || true
+    cp -f "$HOME/.local/share/nvim/site/autoload/plug.vim" "$ALT_HOME/.local/share/nvim/site/autoload/" 2>/dev/null || true
+    echo "  ✓ Файлы скопированы в $ALT_HOME"
+fi
 
-# Устанавливаем плагины
-timeout 180 nvim --headless -u /tmp/install_plugins.vim +PlugInstall +qall 2>&1 | grep -v "^$" || true
+# Устанавливаем плагины используя основной конфиг
+echo "  Устанавливаю плагины (это займет ~1-2 минуты)..."
+timeout 180 nvim --headless +PlugInstall +qall 2>&1 | grep -E "(Updated|Installed|installed)" || true
 echo "  ✓ Плагины установлены"
 
 # Устанавливаем Treesitter парсеры
 echo ""
 echo "Устанавливаем Treesitter парсеры..."
 cat > /tmp/install_ts.lua << 'EOFLUA'
-vim.opt.runtimepath:prepend(vim.fn.stdpath('config') .. '/plugged/nvim-treesitter')
 pcall(function()
   require('nvim-treesitter.install').ensure_installed_sync({ 'python', 'go', 'typescript', 'javascript', 'rust', 'lua', 'vim', 'vimdoc', 'query', 'c', 'gomod', 'gosum', 'gowork' })
 end)
 EOFLUA
 
-timeout 180 nvim --headless -u /tmp/install_plugins.vim -c "luafile /tmp/install_ts.lua" -c "qall" 2>&1 | grep -E "(Downloading|installed|Compiling)" || true
+echo "  Устанавливаю парсеры (это займет ~1-2 минуты)..."
+timeout 180 nvim --headless -c "luafile /tmp/install_ts.lua" -c "qall" 2>&1 | grep -E "(Downloading|installed|Compiling)" || true
 echo "  ✓ Treesitter парсеры установлены"
 
 # Очищаем временные файлы
-rm -f /tmp/install_plugins.vim /tmp/install_ts.lua
+rm -f /tmp/install_ts.lua
 
 echo ""
 echo "================================="

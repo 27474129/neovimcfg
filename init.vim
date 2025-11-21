@@ -27,6 +27,14 @@ Plug 'nvim-tree/nvim-web-devicons'
 Plug 'marko-cerovac/material.nvim'
 Plug 'folke/tokyonight.nvim'
 Plug 'ellisonleao/gruvbox.nvim'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+
+" Cyberpunk themes
+Plug 'tiagovla/tokyodark.nvim'
+Plug 'artanikin/vim-synthwave84'
+
+" Beautiful statusline
+Plug 'nvim-lualine/lualine.nvim'
 
 Plug 'numToStr/Comment.nvim'
 
@@ -38,6 +46,7 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 
 " Debug plugins
 Plug 'mfussenegger/nvim-dap'
+Plug 'nvim-neotest/nvim-nio'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'theHamsta/nvim-dap-virtual-text'
 Plug 'rcarriga/nvim-notify'
@@ -50,14 +59,122 @@ call plug#end()
 
 " Base settings
 
-" color scheme
-" colorscheme tokyonight
-set background=dark
-colorscheme gruvbox
+" Enable true colors
+set termguicolors
 
-"lua << EOF
-"vim.g.material_style = "deep ocean"
-"EOF
+" Better syntax highlighting
+syntax enable
+
+" Increase font size (for GUI nvim) - using full Nerd Font name
+set guifont=HackNerdFontMono-Regular:h14
+
+" Enhanced cursor settings
+set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+set cursorline
+
+" Cyberpunk Color Scheme Configuration
+lua << EOF
+-- Configure tokyonight for cyberpunk look
+vim.g.tokyonight_style = "night"
+vim.g.tokyonight_italic_functions = true
+vim.g.tokyonight_sidebars = { "qf", "vista_kind", "terminal", "packer" }
+vim.g.tokyonight_dark_sidebar = true
+vim.g.tokyonight_dark_float = true
+EOF
+
+" color scheme
+set background=dark
+colorscheme tokyonight
+
+" Blade Runner Neon Theme - Electric Blue + Red
+lua << EOF
+vim.cmd([[
+  " Main editor colors - PURE BLACK with neon blue
+  highlight Normal guibg=#000000 guifg=#00d4ff
+  highlight NormalFloat guibg=#0a0e14
+  highlight LineNr guifg=#ff0066 guibg=#000000
+  highlight CursorLineNr guifg=#00ffff gui=bold
+  highlight CursorLine guibg=#0a1520 gui=bold
+  highlight ColorColumn guibg=#0a0520
+
+  " SUPER BRIGHT CURSOR - Electric Blue + Red
+  highlight Cursor guibg=#00ffff guifg=#000000 gui=bold,reverse
+  highlight iCursor guibg=#ff0066 guifg=#000000 gui=bold,reverse
+  highlight vCursor guibg=#ff3399 guifg=#000000 gui=bold,reverse
+  highlight lCursor guibg=#00d4ff guifg=#000000 gui=bold,reverse
+  highlight CursorColumn guibg=#0a1520
+
+  " Blade Runner Neon Syntax - Electric Blue + Red + Orange
+  highlight Comment guifg=#4d79ff gui=italic
+  highlight Constant guifg=#ff0066 gui=bold
+  highlight String guifg=#00d4ff gui=bold
+  highlight Character guifg=#ff3399
+  highlight Number guifg=#ff6600 gui=bold
+  highlight Boolean guifg=#ff0066 gui=bold
+  highlight Float guifg=#ff6600 gui=bold
+  highlight Function guifg=#00ffff gui=bold
+  highlight Statement guifg=#ff0066 gui=bold
+  highlight Conditional guifg=#ff0066 gui=italic,bold
+  highlight Repeat guifg=#ff0066 gui=bold
+  highlight Label guifg=#00d4ff gui=bold
+  highlight Operator guifg=#ff3399 gui=bold
+  highlight Keyword guifg=#ff0066 gui=bold,italic
+  highlight Type guifg=#00ffff gui=bold
+  highlight Special guifg=#ff6600 gui=bold
+  highlight Identifier guifg=#00d4ff
+  highlight PreProc guifg=#ff6600 gui=bold
+  highlight Include guifg=#ff0066 gui=bold
+  highlight Define guifg=#00ffff gui=bold
+  highlight Macro guifg=#ff6600 gui=bold
+
+  " UI Elements - Electric Blue + Red theme
+  highlight VertSplit guifg=#00d4ff guibg=#000000 gui=bold
+  highlight StatusLine guifg=#00ffff guibg=#0a1520 gui=bold
+  highlight StatusLineNC guifg=#4d79ff guibg=#000000
+  highlight TabLine guifg=#4d79ff guibg=#000000
+  highlight TabLineFill guibg=#000000
+  highlight TabLineSel guifg=#00ffff guibg=#0a1520 gui=bold
+  highlight Pmenu guibg=#0a1520 guifg=#00d4ff
+  highlight PmenuSel guibg=#ff0066 guifg=#000000 gui=bold
+  highlight PmenuSbar guibg=#0a1520
+  highlight PmenuThumb guibg=#ff0066
+
+  " Search highlighting - Red + Blue
+  highlight Search guibg=#ff0066 guifg=#000000 gui=bold
+  highlight IncSearch guibg=#00ffff guifg=#000000 gui=bold
+
+  " NvimTree - Blade Runner Blue + Red theme
+  highlight NvimTreeNormal guibg=#000000 guifg=#00d4ff
+  highlight NvimTreeEndOfBuffer guibg=#000000
+  highlight NvimTreeCursorLine guibg=#0a1520 gui=bold
+  highlight NvimTreeFolderName guifg=#00ffff gui=bold
+  highlight NvimTreeOpenedFolderName guifg=#ff0066 gui=bold
+  highlight NvimTreeEmptyFolderName guifg=#4d79ff
+  highlight NvimTreeFolderIcon guifg=#00ffff gui=bold
+  highlight NvimTreeRootFolder guifg=#ff0066 gui=bold
+  highlight NvimTreeGitDirty guifg=#ff6600 gui=bold
+  highlight NvimTreeGitNew guifg=#00ffff gui=bold
+  highlight NvimTreeGitDeleted guifg=#ff0066 gui=bold
+  highlight NvimTreeGitStaged guifg=#00d4ff gui=bold
+  highlight NvimTreeSpecialFile guifg=#ff6600 gui=bold,underline
+  highlight NvimTreeIndentMarker guifg=#00d4ff
+  highlight NvimTreeExecFile guifg=#00ffff gui=bold
+  highlight NvimTreeImageFile guifg=#ff3399
+  highlight NvimTreeSymlink guifg=#00d4ff gui=italic
+
+  " Diagnostics - Red + Blue + Orange
+  highlight DiagnosticError guifg=#ff0066 gui=bold
+  highlight DiagnosticWarn guifg=#ff6600 gui=bold
+  highlight DiagnosticInfo guifg=#00d4ff gui=bold
+  highlight DiagnosticHint guifg=#00ffff
+
+  " Git signs - Green for new/add, Yellow for changes, Red for delete
+  highlight GitSignsAdd guifg=#00ff00 gui=bold
+  highlight GitSignsChange guifg=#ffff00 gui=bold
+  highlight GitSignsDelete guifg=#ff0066 gui=bold
+  highlight GitSignsUntracked guifg=#00ff00 gui=bold
+]])
+EOF
 inoremap jj <esc>
 set mouse=a  " enable mouse
 set encoding=utf-8
@@ -80,19 +197,42 @@ set expandtab
 set shiftwidth=2
 
 lua << EOF
+-- Quit nvim (only in normal mode, not while typing)
 vim.api.nvim_set_keymap('n', '<C-a>', ':q!<CR>', {noremap = true, silent = true})
-vim.api.nvim_set_keymap('!', '<C-a>', ':q!<CR>', {noremap = true, silent = true})
+
+-- Window navigation (move between file tree and editor)
+vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', {noremap = true, silent = true})
+
+-- Close current buffer but keep window open
+vim.api.nvim_set_keymap('n', '<Leader>x', ':bdelete<CR>', {noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', 'x', ':bdelete<CR>', {noremap = true, silent = true})
 EOF
 
 lua << EOF
-vim.api.nvim_set_keymap("n", "r", "vim.lsp.buf.rename", {noremap = true})
-vim.api.nvim_set_keymap("v", "r", "vim.lsp.buf.rename", {noremap = true})
+-- Undo/Redo shortcuts (like Ctrl+Z in Windows)
+vim.api.nvim_set_keymap("n", "<C-z>", "u", {noremap = true})  -- Ctrl+Z for undo
+vim.api.nvim_set_keymap("n", "<C-y>", "<C-r>", {noremap = true})  -- Ctrl+Y for redo
+vim.api.nvim_set_keymap("i", "<C-z>", "<Esc>ui", {noremap = true})  -- Ctrl+Z in insert mode
+
+-- Remove dangerous 'r' binding for rename (was too easy to trigger accidentally)
+-- Rename is still available via 't' key (see line 312 below)
 EOF
 
 " Copy and paste in special clipboard
 lua << EOF
--- Copy
+-- Copy to system clipboard - Ctrl+C (visual mode)
 vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true})
+
+-- Simple two-letter clipboard commands
+-- cy = copy to system clipboard (normal and visual mode)
+vim.api.nvim_set_keymap("n", "cy", '"+yy', { noremap = true}) -- copy current line
+vim.api.nvim_set_keymap("v", "cy", '"+y', { noremap = true})  -- copy selection
+
+-- cp = paste from system clipboard (normal and visual mode)
+vim.api.nvim_set_keymap("n", "cp", '"+p', { noremap = true})
+vim.api.nvim_set_keymap("v", "cp", '"+p', { noremap = true})
 
 -- Paste
 function paste_from_clipboard()
@@ -111,11 +251,11 @@ function paste_from_clipboard()
    -- Read the output of the command and insert it into the buffer
    local content = vim.fn.system(command)
    content = content:gsub("\n$", "") -- Remove trailing newlines
-   
+
    -- Determine the current mode and insert the content accordingly
    local mode = vim.api.nvim_get_mode().mode
    if mode == "i" or mode == "ic" then
-       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-R>+<Esc>", true, true, true), "n", true)
+       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-R>+<Esc>", true, true, true), "n", false)
    else
        vim.api.nvim_put({content}, "c", true, true)
    end
@@ -127,25 +267,33 @@ vim.api.nvim_set_keymap("v", "<C-v>", ":lua paste_from_clipboard()<CR>", {norema
 vim.api.nvim_set_keymap("i", "<C-v>", "<Esc>:lua paste_from_clipboard()<CR>a", {noremap = true})
 EOF
 
-" Close tab in tabbuffer
+" Close current buffer and go to next one (only in normal mode, not while typing)
 lua << EOF
-vim.api.nvim_set_keymap('n', '<F5>', ':bdelete<CR>:bnext<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('!', '<F5>', ':bdelete<CR>:bnext<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'sd', ':bdelete<CR>:bnext<CR>', { noremap = true, silent = true })
 EOF
 
 autocmd FileType python set colorcolumn=100
+autocmd FileType go set colorcolumn=100
+" Suppress lspconfig deprecation warnings for nvim 0.11 compatibility
+lua << EOF
+local original_deprecate = vim.deprecate
+vim.deprecate = function(name, alternative, version, plugin, backtrace)
+  -- Suppress lspconfig framework deprecation warning
+  if name and (name:match("lspconfig") or plugin == "nvim-lspconfig") then
+    return
+  end
+  original_deprecate(name, alternative, version, plugin, backtrace)
+end
+EOF
+
 " Plugin settings
 lua << EOF
--- Telescope shorcuts
-vim.api.nvim_set_keymap("!", "<F4>", ":Telescope find_files<cr>", { noremap = true})
-vim.api.nvim_set_keymap("!", "<F2>", ":Telescope live_grep<cr>", { noremap = true})
+-- Telescope shortcuts (F-keys work everywhere, but kept only in normal mode for consistency)
 vim.api.nvim_set_keymap("n", "<F4>", ":Telescope find_files<cr>", { noremap = true})
 vim.api.nvim_set_keymap("n", "<F2>", ":Telescope live_grep<cr>", { noremap = true})
 vim.api.nvim_set_keymap("n", "<F3>", ":Telescope buffers<cr>", { noremap = true})
-vim.api.nvim_set_keymap("!", "<F3>", ":Telescope buffers<cr>", { noremap = true})
 
--- Tree shocuts
-vim.api.nvim_set_keymap("!", "<C-n>", ":NvimTreeToggle<cr>", { noremap = true})
+-- Tree shortcuts (only in normal mode)
 vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<cr>", { noremap = true})
 
 -- Buffer line shortcuts
@@ -153,17 +301,78 @@ vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<cr>", { noremap = true})
 vim.api.nvim_set_keymap("n", "<Tab>", ":BufferLineCycleNext<cr>", { noremap = true })
 vim.api.nvim_set_keymap("n", "o", ":BufferLineCyclePrev<cr>", {noremap = true})
 
--- Actions
+-- Actions (only in normal mode)
 vim.api.nvim_set_keymap("n", "<C-k>", ":BufferLineCloseOthers<cr>", {noremap = true})
-vim.api.nvim_set_keymap("!", "<C-k>", ":BufferLineCloseOthers<cr>", {noremap = true})
 vim.api.nvim_set_keymap("n", "<C-r>", ":BufferLineCloseRight<cr>", {noremap = true})
-vim.api.nvim_set_keymap("!", "<C-r>", ":BufferLineClosseRight<cr>", {noremap = true})
 vim.api.nvim_set_keymap("n", "<C-l>", ":BufferLineCloseLeft<cr>", {noremap = true})
-vim.api.nvim_set_keymap("!", "<C-l>", ":BufferLineCLoseLeft<cr>", {noremap = true})
 
--- Gitsigns
+-- Git shortcuts (only in normal mode)
+-- F1 - Show who wrote this line (git blame)
 vim.api.nvim_set_keymap("n", "<F1>", ":Gitsigns blame_line<cr>", {noremap = true})
-vim.api.nvim_set_keymap("!", "<F1>", ":Gitsigns blame_line<cr>", {noremap = true})
+
+-- Git blame for visual selection (select block and press F1)
+vim.api.nvim_set_keymap("v", "<F1>", ":lua show_git_blame_for_selection()<CR>", {noremap = true, silent = true})
+
+-- Function to show git blame for selected lines
+function show_git_blame_for_selection()
+  -- Get visual selection range
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  local current_file = vim.fn.expand("%")
+
+  -- Check if file exists in git
+  if current_file == "" then
+    print("No file selected")
+    return
+  end
+
+  -- Run git blame for the selected range (using relative path from git root)
+  local cmd = string.format("git blame -L %d,%d -- %s", start_line, end_line, vim.fn.shellescape(current_file))
+  local blame_output = vim.fn.systemlist(cmd)
+
+  -- Check for errors
+  if vim.v.shell_error ~= 0 then
+    print("Error: " .. table.concat(blame_output, "\n"))
+    return
+  end
+
+  -- Create a buffer to show the results
+  local buf = vim.api.nvim_create_buf(false, true)
+
+  -- Format output nicely
+  local formatted_output = {"Git Blame for lines " .. start_line .. "-" .. end_line .. ":", ""}
+  for _, line in ipairs(blame_output) do
+    table.insert(formatted_output, line)
+  end
+
+  -- Set buffer content
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, formatted_output)
+
+  -- Calculate window size
+  local width = math.min(120, vim.o.columns - 4)
+  local height = math.min(#formatted_output + 2, vim.o.lines - 4)
+
+  -- Open floating window
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    col = math.floor((vim.o.columns - width) / 2),
+    row = math.floor((vim.o.lines - height) / 2),
+    style = 'minimal',
+    border = 'rounded',
+    title = ' Git Blame ',
+    title_pos = 'center',
+  })
+
+  -- Set buffer options
+  vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+  vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+
+  -- Close window with q or Esc
+  vim.api.nvim_buf_set_keymap(buf, 'n', 'q', ':close<CR>', {noremap = true, silent = true})
+  vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', ':close<CR>', {noremap = true, silent = true})
+end
 
 -- Usages
 -- vim.api.nvim_set_keymap('n', '<leader>fr', ':lua vim.lsp.buf.references()<CR>', {noremap = true, silent = true})
@@ -185,18 +394,107 @@ EOF
 "EOF
 
 lua << EOF
-require'lspconfig'.pyright.setup{}
 -- Setup language servers.
 local lspconfig = require('lspconfig')
-lspconfig.pyright.setup {}
-lspconfig.tsserver.setup {}
-lspconfig.rust_analyzer.setup {
-  -- Server-specific settings. See `:help lspconfig-setup`
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+-- Disable inlay hints globally
+vim.lsp.inlay_hint.enable(false)
+
+-- Disable automatic hover
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+  border = "rounded",
+  max_width = 80,
+  max_height = 20,
+})
+
+-- Disable automatic signature help
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+  border = "rounded",
+  focusable = false,
+  silent = true,
+})
+
+lspconfig.pyright.setup {
+  capabilities = capabilities,
   settings = {
-    ['rust-analyzer'] = {},
+    python = {
+      analysis = {
+        inlayHints = {
+          variableTypes = false,
+          functionReturnTypes = false,
+        }
+      }
+    }
+  }
+}
+lspconfig.ts_ls.setup {
+  capabilities = capabilities,
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'none',
+        includeInlayPropertyDeclarationTypeHints = false,
+        includeInlayFunctionLikeReturnTypeHints = false,
+      }
+    }
+  }
+}
+lspconfig.rust_analyzer.setup {
+  capabilities = capabilities,
+  settings = {
+    ['rust-analyzer'] = {
+      inlayHints = {
+        enable = false,
+      }
+    },
   },
 }
 
+-- Golang LSP setup with full support
+lspconfig.gopls.setup {
+  capabilities = capabilities,
+  settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true,
+        shadow = true,
+      },
+      staticcheck = true,
+      gofumpt = true,
+      hints = {
+        assignVariableTypes = false,
+        compositeLiteralFields = false,
+        compositeLiteralTypes = false,
+        constantValues = false,
+        functionTypeParameters = false,
+        parameterNames = false,
+        rangeVariableTypes = false,
+      },
+    },
+  },
+  on_attach = function(client, bufnr)
+    -- Enable formatting on save for Go files
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        group = vim.api.nvim_create_augroup("GoFormat", { clear = true }),
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({ async = false })
+        end,
+      })
+    end
+  end,
+}
+
+
+-- Disable diagnostic signs in the gutter (no more "E" symbols)
+vim.diagnostic.config({
+  signs = false,  -- Disable "E", "W", "I", "H" signs in the left column
+  virtual_text = true,  -- Keep inline error messages
+  underline = true,  -- Keep underline for errors
+  update_in_insert = false,  -- Don't show diagnostics while typing
+})
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -240,7 +538,7 @@ EOF
 lua << EOF
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python" },
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "go", "gomod", "gosum", "gowork" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -297,8 +595,18 @@ lua <<EOF
       end,
     },
     window = {
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
+      completion = cmp.config.window.bordered(),
+      documentation = {
+        border = "rounded",
+        max_width = 60,
+        max_height = 15,
+      },
+    },
+    view = {
+      entries = {name = 'custom', selection_order = 'near_cursor' }
+    },
+    experimental = {
+      ghost_text = false,
     },
     mapping = cmp.mapping.preset.insert({
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -345,13 +653,7 @@ lua <<EOF
     })
   })
 
-  -- Set up lspconfig.
-  -- local capabilities = require('cmp_nvim_lsp').default_capabilities()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  require('lspconfig')['pyright'].setup {
-    capabilities = capabilities,
-    on_attach = on_attach
-  }
+  -- LSP capabilities are configured above in the main LSP setup section
 EOF
 
 lua << EOF
@@ -374,7 +676,8 @@ vim.opt.termguicolors = true
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   view = {
-    width = 30,
+    width = 45,
+    side = "left",
   },
   renderer = {
     group_empty = true,
@@ -449,20 +752,99 @@ require('bufferline').setup {
         return true
       end
     end,
-    offsets = {{filetype = "NvimTree", text = "File Explorer", text_align = "left"}}, -- | "center" | "right"}},
-    color_icons = true, -- | false, -- whether or not to add the filetype icon highlights
-    show_buffer_icons = true, -- | false, -- disable filetype icons for buffers
-    show_buffer_close_icons = true, -- | false,
-    show_close_icon = true, -- | false,
-    show_tab_indicators = true, -- | false,
-    persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
-    -- can also be a table containing 2 custom separators
-    -- [focused and unfocused]. eg: { '|', '|' }
-    separator_style = "slant", -- | "thick" | "thin" | { 'any', 'any' },
+    offsets = {{filetype = "NvimTree", text = "⚡ CYBERPUNK FILES", text_align = "center"}},
+    color_icons = true,
+    show_buffer_icons = true,
+    show_buffer_close_icons = true,
+    show_close_icon = true,
+    show_tab_indicators = true,
+    persist_buffer_sort = true,
+    separator_style = "slant",
     enforce_regular_tabs = true,
-    always_show_bufferline = true -- | false,
+    always_show_bufferline = true
+  },
+  highlights = {
+    fill = {
+      bg = '#000000',
+    },
+    background = {
+      fg = '#4d79ff',
+      bg = '#000000',
+    },
+    buffer_visible = {
+      fg = '#00d4ff',
+      bg = '#0a1520',
+      bold = true,
+    },
+    buffer_selected = {
+      fg = '#00ffff',
+      bg = '#0a1520',
+      bold = true,
+      italic = false,
+    },
+    modified = {
+      fg = '#ff0066',
+      bg = '#000000',
+      bold = true,
+    },
+    modified_visible = {
+      fg = '#ff0066',
+      bg = '#0a1520',
+      bold = true,
+    },
+    modified_selected = {
+      fg = '#ff3399',
+      bg = '#0a1520',
+      bold = true,
+    },
+    separator = {
+      fg = '#00d4ff',
+      bg = '#000000',
+    },
+    separator_visible = {
+      fg = '#00d4ff',
+      bg = '#0a1520',
+    },
+    separator_selected = {
+      fg = '#00ffff',
+      bg = '#0a1520',
+    },
+    indicator_selected = {
+      fg = '#00ffff',
+      bg = '#0a1520',
+    },
+    diagnostic = {
+      fg = '#ff0066',
+      bg = '#000000',
+    },
+    hint = {
+      fg = '#00ffff',
+      bg = '#000000',
+    },
+    info = {
+      fg = '#00d4ff',
+      bg = '#000000',
+    },
+    warning = {
+      fg = '#ff6600',
+      bg = '#000000',
+    },
+    error = {
+      fg = '#ff0066',
+      bg = '#000000',
+    },
   }
 }
+
+-- Blade Runner Bufferline - Blue + Red
+vim.cmd([[
+  highlight BufferLineFill guibg=#000000
+  highlight BufferLineBackground guifg=#4d79ff guibg=#000000
+  highlight BufferLineBufferSelected guifg=#00ffff guibg=#0a1520 gui=bold
+  highlight BufferLineBufferVisible guifg=#00d4ff guibg=#0a1520 gui=bold
+  highlight BufferLineNumbers guifg=#ff0066 gui=bold
+  highlight BufferLineCloseButton guifg=#ff0066 gui=bold
+]])
 EOF
 
 lua << EOF
@@ -534,7 +916,7 @@ view = {
   centralize_selection = false,
   cursorline = true,
   debounce_delay = 15,
-  width = 40,
+  width = 45,
   side = "left",
   preserve_window_proportions = false,
   number = false,
@@ -556,14 +938,14 @@ view = {
 renderer = {
   add_trailing = false,
   group_empty = false,
-  highlight_git = false,
+  highlight_git = true,
   full_name = false,
-  highlight_opened_files = "none",
-  highlight_modified = "none",
+  highlight_opened_files = "all",
+  highlight_modified = "name",
   root_folder_label = ":~:s?$?/..?",
   indent_width = 2,
   indent_markers = {
-    enable = false,
+    enable = true,
     inline_arrows = true,
     icons = {
       corner = "└",
@@ -629,7 +1011,7 @@ diagnostics = {
   },
 },
 filters = {
-  git_ignored = true,
+  git_ignored = false,
   dotfiles = false,
   git_clean = false,
   no_buffer = false,
@@ -741,7 +1123,7 @@ require('gitsigns').setup {
     delete       = { text = '-' },
     topdelete    = { text = '‾' },
     changedelete = { text = '~' },
-    untracked    = { text = '┆' },
+    untracked    = { text = '+' },  -- Show + for new files too
   },
   signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
   numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
@@ -751,11 +1133,11 @@ require('gitsigns').setup {
     follow_files = true
   },
   attach_to_untracked = true,
-  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame = true, -- Show git blame for current line (like PyCharm)
   current_line_blame_opts = {
     virt_text = true,
     virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
-    delay = 1000,
+    delay = 500, -- Show blame after 500ms (faster than default)
     ignore_whitespace = false,
   },
   current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
@@ -771,14 +1153,32 @@ require('gitsigns').setup {
     row = 0,
     col = 1
   },
-  yadm = {
-    enable = false
-  },
 }
 EOF
 
 lua << EOF
 require("ibl").setup {
+  indent = {
+    char = "│",
+    tab_char = "│",
+  },
+  scope = {
+    enabled = true,
+    show_start = false,
+    show_end = false,
+  },
+  exclude = {
+    filetypes = {
+      "help",
+      "terminal",
+      "lazy",
+      "lspinfo",
+      "TelescopePrompt",
+      "TelescopeResults",
+      "nvim-tree",
+      ""
+    }
+  }
 }
 EOF
 
@@ -788,6 +1188,137 @@ require("autoclose").setup({
       disabled_filetypes = { "text", "markdown" },
    },
 })
+EOF
+
+lua << EOF
+-- Configure Catppuccin theme
+local catppuccin_ok, catppuccin = pcall(require, "catppuccin")
+if not catppuccin_ok then
+  return
+end
+
+catppuccin.setup({
+    flavour = "mocha", -- latte, frappe, macchiato, mocha
+    transparent_background = false,
+    show_end_of_buffer = false,
+    term_colors = true,
+    dim_inactive = {
+        enabled = false,
+        shade = "dark",
+        percentage = 0.15,
+    },
+    styles = {
+        comments = { "italic" },
+        conditionals = { "italic" },
+        loops = {},
+        functions = { "bold" },
+        keywords = { "italic" },
+        strings = {},
+        variables = {},
+        numbers = {},
+        booleans = { "bold" },
+        properties = {},
+        types = { "bold" },
+        operators = {},
+    },
+    integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+        telescope = true,
+        indent_blankline = {
+            enabled = true,
+            colored_indent_levels = false,
+        },
+        native_lsp = {
+            enabled = true,
+        },
+    },
+})
+EOF
+
+lua << EOF
+-- Configure Lualine with Cyberpunk theme
+local lualine_ok, lualine = pcall(require, "lualine")
+if not lualine_ok then
+  return
+end
+
+-- Custom Cyberpunk theme for lualine
+local cyberpunk_theme = {
+  normal = {
+    a = { fg = '#0a0e14', bg = '#00ffff', gui = 'bold' },
+    b = { fg = '#00ff9f', bg = '#1a1e24' },
+    c = { fg = '#00ff9f', bg = '#0a0e14' },
+  },
+  insert = {
+    a = { fg = '#0a0e14', bg = '#ff00ff', gui = 'bold' },
+    b = { fg = '#00ff9f', bg = '#1a1e24' },
+    c = { fg = '#00ff9f', bg = '#0a0e14' },
+  },
+  visual = {
+    a = { fg = '#0a0e14', bg = '#ff79c6', gui = 'bold' },
+    b = { fg = '#00ff9f', bg = '#1a1e24' },
+    c = { fg = '#00ff9f', bg = '#0a0e14' },
+  },
+  replace = {
+    a = { fg = '#0a0e14', bg = '#ff0055', gui = 'bold' },
+    b = { fg = '#00ff9f', bg = '#1a1e24' },
+    c = { fg = '#00ff9f', bg = '#0a0e14' },
+  },
+  command = {
+    a = { fg = '#0a0e14', bg = '#00ff9f', gui = 'bold' },
+    b = { fg = '#00ff9f', bg = '#1a1e24' },
+    c = { fg = '#00ff9f', bg = '#0a0e14' },
+  },
+  inactive = {
+    a = { fg = '#6272a4', bg = '#0a0e14' },
+    b = { fg = '#6272a4', bg = '#0a0e14' },
+    c = { fg = '#6272a4', bg = '#0a0e14' },
+  },
+}
+
+lualine.setup {
+  options = {
+    icons_enabled = true,
+    theme = cyberpunk_theme,
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    globalstatus = true,
+    refresh = {
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {'nvim-tree'}
+}
 EOF
 
 lua << EOF
@@ -879,10 +1410,53 @@ dap.configurations.python = {
 }
 
 vim.keymap.set('n', '<C-b>', require 'dap'.toggle_breakpoint)
+
+-- Go DAP configuration
+dap.adapters.delve = {
+  type = 'server',
+  port = '${port}',
+  executable = {
+    command = 'dlv',
+    args = {'dap', '-l', '127.0.0.1:${port}'},
+  }
+}
+
+dap.configurations.go = {
+  {
+    type = 'delve',
+    name = 'Debug',
+    request = 'launch',
+    program = "${file}"
+  },
+  {
+    type = 'delve',
+    name = 'Debug test',
+    request = 'launch',
+    mode = 'test',
+    program = "${file}"
+  },
+  {
+    type = 'delve',
+    name = 'Debug test (go.mod)',
+    request = 'launch',
+    mode = 'test',
+    program = "./${relativeFileDirname}"
+  }
+}
 EOF
 
 lua << EOF
-require("nvim-dap-virtual-text").setup()
+require("nvim-dap-virtual-text").setup({
+  enabled = false,  -- Disable virtual text by default
+  enabled_commands = true,
+  highlight_changed_variables = true,
+  highlight_new_as_changed = false,
+  show_stop_reason = true,
+  commented = false,
+  only_first_definition = true,
+  all_references = false,
+  virt_text_pos = 'eol',
+})
 EOF
 
 lua << EOF
@@ -894,9 +1468,6 @@ EOF
 
 lua << EOF
 require("dapui").setup()
-require("dapui").open()
-require("dapui").close()
-require("dapui").toggle()
 EOF
 
 lua << EOF
